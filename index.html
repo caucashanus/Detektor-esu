@@ -4,78 +4,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Výběr tvaru obličeje</title>
- <style>
-  body {
-    font-family: sans-serif;
-    text-align: center;
-    background: #f0f0f0;
-    padding: 20px;
-  }
-
-  #container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .video-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 400px;
-  }
-
-  #video, #overlay {
-    width: 100%;
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  }
-
-  #overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-  }
-
-  .buttons {
-    margin-top: 15px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  button {
-    margin: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    transition: background-color 0.2s;
-  }
-
-  button:hover {
-    background-color: #0056b3;
-  }
-
-  #shape-label {
-    margin-top: 15px;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #333;
-  }
-</style>
+  <title>Obrys podle obličeje</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #f0f0f0;
+      padding: 20px;
+    }
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+    }
+    #video, #overlay {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    #overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+    .buttons {
+      margin-top: 15px;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #shape-label {
+      margin-top: 10px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
   <h1>Zvol si svůj tvar obličeje</h1>
   <div id="container">
     <div class="video-wrapper">
-  <video id="video" autoplay muted playsinline></video>
-  <canvas id="overlay" width="400" height="300"></canvas>
-</div>
+      <video id="video" autoplay muted playsinline></video>
+      <canvas id="overlay" width="400" height="300"></canvas>
+    </div>
     <div id="shape-label"></div>
     <div class="buttons">
       <button onclick="selectShape('kulaty')">Kulatý</button>
@@ -84,6 +66,8 @@
       <button onclick="selectShape('trojuhelnikovy')">Trojúhelníkový</button>
     </div>
   </div>
-  <script src="app.js"></script>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+  <script defer src="app.js"></script>
 </body>
 </html>
