@@ -1,71 +1,44 @@
-
 const video = document.getElementById('video');
+const shapeLabel = document.getElementById('shape-label');
 const canvas = document.getElementById('overlay');
 const ctx = canvas.getContext('2d');
-const label = document.getElementById('shape-label');
 
-let selectedShape = null;
-
-Promise.all([
-  faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models'),
-  faceapi.nets.faceLandmark68Net.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models')
-]).then(startVideo);
-
-function startVideo() {
-  navigator.mediaDevices.getUserMedia({ video: {} })
-    .then(stream => video.srcObject = stream)
-    .catch(err => console.error("Nelze spustit kameru", err));
-}
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => {
+    video.srcObject = stream;
+    video.onloadedmetadata = () => {
+      video.play();
+    };
+  })
+  .catch(err => {
+    console.error("Nelze spustit kameru", err);
+  });
 
 function selectShape(shape) {
-  selectedShape = shape;
-  label.innerText = "Vybraný tvar: " + shape;
+  shapeLabel.innerText = "Vybraný tvar: " + shape.charAt(0).toUpperCase() + shape.slice(1);
+  drawOverlayShape(shape);
 }
 
-video.addEventListener('play', () => {
-  const displaySize = { width: video.width, height: video.height };
-  faceapi.matchDimensions(canvas, displaySize);
+function drawOverlayShape(shape) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  setInterval(async () => {
-    const detection = await faceapi
-      .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-      .withFaceLandmarks();
+  ctx.strokeStyle = "red";
+  ctx.lineWidth = 3;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.beginPath();
 
-    if (detection && selectedShape) {
-      const landmarks = detection.landmarks;
-      const jaw = landmarks.getJawOutline();
+  if (shape === "kulaty") {
+    ctx.arc(200, 150, 80, 0, Math.PI * 2);
+  } else if (shape === "ovalny") {
+    ctx.ellipse(200, 150, 70, 100, 0, 0, Math.PI * 2);
+  } else if (shape === "hranaty") {
+    ctx.rect(130, 90, 140, 140);
+  } else if (shape === "trojuhelnikovy") {
+    ctx.moveTo(200, 70);
+    ctx.lineTo(130, 230);
+    ctx.lineTo(270, 230);
+    ctx.closePath();
+  }
 
-      const left = jaw[0].x;
-      const right = jaw[jaw.length - 1].x;
-      const top = landmarks.getNose()[0].y - 50;
-      const bottom = jaw[8].y + 20;
-
-      const width = right - left;
-      const height = bottom - top;
-      const centerX = left + width / 2;
-      const centerY = top + height / 2;
-
-      ctx.strokeStyle = "red";
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-
-      if (selectedShape === "kulaty") {
-        const radius = Math.min(width, height) / 2;
-        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-      } else if (selectedShape === "ovalny") {
-        ctx.ellipse(centerX, centerY, width / 2, height / 2, 0, 0, 2 * Math.PI);
-      } else if (selectedShape === "hranaty") {
-        ctx.rect(centerX - width / 2, centerY - height / 2, width, height);
-      } else if (selectedShape === "trojuhelnikovy") {
-        ctx.moveTo(centerX, centerY - height / 2);
-        ctx.lineTo(centerX - width / 2, centerY + height / 2);
-        ctx.lineTo(centerX + width / 2, centerY + height / 2);
-        ctx.closePath();
-      }
-
-      ctx.stroke();
-    }
-  }, 300);
-});
+  ctx.stroke();
+}
