@@ -1,53 +1,45 @@
 
 const video = document.getElementById('video');
-const hairstyleDiv = document.getElementById('hairstyle');
+const shapeLabel = document.getElementById('shape-label');
+const canvas = document.getElementById('overlay');
+const ctx = canvas.getContext('2d');
 
-Promise.all([
-  faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models'),
-  faceapi.nets.faceLandmark68Net.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models')
-]).then(startVideo);
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => {
+    video.srcObject = stream;
+    video.onloadedmetadata = () => {
+      video.play();
+    };
+  })
+  .catch(err => {
+    console.error("Nelze spustit kameru", err);
+  });
 
-function startVideo() {
-  navigator.mediaDevices.getUserMedia({ video: {} })
-    .then(stream => {
-      video.srcObject = stream;
-    })
-    .catch(err => {
-      console.error("Nelze spustit kameru", err);
-      hairstyleDiv.innerText = "Nepodařilo se získat přístup ke kameře.";
-    });
+function selectShape(shape) {
+  shapeLabel.innerText = "Vybraný tvar: " + shape.charAt(0).toUpperCase() + shape.slice(1);
+  drawOverlayShape(shape);
 }
 
-video.addEventListener('play', () => {
-  const canvas = faceapi.createCanvasFromMedia(video);
-  document.body.append(canvas);
-  const displaySize = { width: video.width, height: video.height };
-  faceapi.matchDimensions(canvas, displaySize);
+function drawOverlayShape(shape) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  setInterval(async () => {
-    const detections = await faceapi
-      .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-      .withFaceLandmarks();
+  ctx.strokeStyle = "red";
+  ctx.lineWidth = 3;
 
-    if (!detections) {
-      hairstyleDiv.innerText = "Tvar obličeje nebyl rozpoznán...";
-      return;
-    }
+  ctx.beginPath();
 
-    const landmarks = detections.landmarks;
-    const jaw = landmarks.getJawOutline();
-    const width = jaw[jaw.length - 1].x - jaw[0].x;
-    const height = landmarks.getNose()[0].y - jaw[0].y;
+  if (shape === "kulaty") {
+    ctx.arc(200, 150, 80, 0, Math.PI * 2);
+  } else if (shape === "ovalny") {
+    ctx.ellipse(200, 150, 70, 100, 0, 0, Math.PI * 2);
+  } else if (shape === "hranaty") {
+    ctx.rect(130, 90, 140, 140);
+  } else if (shape === "trojuhelnikovy") {
+    ctx.moveTo(200, 70);
+    ctx.lineTo(130, 230);
+    ctx.lineTo(270, 230);
+    ctx.closePath();
+  }
 
-    const ratio = width / height;
-
-    let shape = '';
-    if (ratio > 1.5) shape = 'kulatý';
-    else if (ratio < 0.9) shape = 'oválný';
-    else shape = 'hranatý';
-
-    hairstyleDiv.innerHTML = `<h2>Tvůj tvar obličeje je: ${shape}</h2>
-      <img src="images/${shape}.jpg" alt="účes pro ${shape} obličej" width="200"
-      style="border-radius:12px; box-shadow: 0 0 10px #aaa;" />`;
-  }, 1000);
-});
+  ctx.stroke();
+}

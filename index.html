@@ -4,32 +4,62 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Detekce tvaru obličeje a účesy</title>
+  <title>Výběr tvaru obličeje</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
-      background: #f8f8f8;
+      background: #f0f0f0;
       padding: 20px;
+    }
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     video {
       width: 100%;
       max-width: 400px;
       border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
     }
-    #hairstyle {
-      margin-top: 20px;
+    .buttons {
+      margin-top: 15px;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #shape-label {
+      margin-top: 10px;
       font-size: 1.2em;
+      font-weight: bold;
+      color: #333;
+    }
+    #overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
     }
   </style>
-  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-  <script defer src="app.js"></script>
 </head>
 <body>
-  <img src="RBlogo.png" alt="Logo firmy" style="max-width: 200px; margin-bottom: 10px;" />
-  <h1>Zjisti tvar svého obličeje a vyber si </h1>
-  <video id="video" autoplay muted playsinline></video>
-  <div id="hairstyle">Zde se zobrazí doporučený účes...</div>
+  <h1>Zvol si svůj tvar obličeje</h1>
+  <div id="container">
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="overlay" width="400" height="300"></canvas>
+    <div id="shape-label"></div>
+    <div class="buttons">
+      <button onclick="selectShape('kulaty')">Kulatý</button>
+      <button onclick="selectShape('ovalny')">Oválný</button>
+      <button onclick="selectShape('hranaty')">Hranatý</button>
+      <button onclick="selectShape('trojuhelnikovy')">Trojúhelníkový</button>
+    </div>
+  </div>
+  <script src="app.js"></script>
 </body>
 </html>
